@@ -5,19 +5,19 @@ import java.sql.Timestamp;
 public class Task {
     private int id;
     private int userId;
-    private String url;
-    private String keyword;
+    private String sourceContent;
+    private String targetContent;
     private String status; // PENDING, PROCESSING, COMPLETED, FAILED
     private int result;
     private Timestamp createdAt;
 
     public Task() {}
 
-    public Task(int id, int userId, String url, String keyword, String status, int result, Timestamp createdAt) {
+    public Task(int id, int userId, String sourceContent, String targetContent, String status, int result, Timestamp createdAt) {
         this.id = id;
         this.userId = userId;
-        this.url = url;
-        this.keyword = keyword;
+        this.sourceContent = sourceContent;
+        this.targetContent = targetContent;
         this.status = status;
         this.result = result;
         this.createdAt = createdAt;
@@ -29,11 +29,11 @@ public class Task {
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public String getSourceContent() { return sourceContent; }
+    public void setSourceContent(String sourceContent) { this.sourceContent = sourceContent; }
 
-    public String getKeyword() { return keyword; }
-    public void setKeyword(String keyword) { this.keyword = keyword; }
+    public String getTargetContent() { return targetContent; }
+    public void setTargetContent(String targetContent) { this.targetContent = targetContent; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

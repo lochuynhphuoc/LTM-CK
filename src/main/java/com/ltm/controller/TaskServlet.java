@@ -54,8 +54,8 @@ public class TaskServlet extends HttpServlet {
 
         Task task = new Task();
         task.setUserId(user.getId());
-        task.setUrl(sourceContent); // Storing content directly
-        task.setKeyword(targetContent); // Storing content directly
+        task.setSourceContent(sourceContent); // store original text
+        task.setTargetContent(targetContent); // store suspected text
 
         int taskId = taskDAO.addTask(task);
         System.out.println("Task added to DB with ID: " + taskId);

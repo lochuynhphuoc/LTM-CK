@@ -9,11 +9,14 @@ public class SchemaUpdate {
         try (Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement()) {
 
-            // Modify keyword column to TEXT to hold long URLs
-            String sql = "ALTER TABLE tasks MODIFY COLUMN keyword TEXT";
-            stmt.executeUpdate(sql);
+            // Ensure the tasks table stores full text for both source/target content
+            String updateSource = "ALTER TABLE tasks MODIFY COLUMN source_content LONGTEXT";
+            String updateTarget = "ALTER TABLE tasks MODIFY COLUMN target_content LONGTEXT";
 
-            System.out.println("Successfully updated 'keyword' column to TEXT type.");
+            stmt.executeUpdate(updateSource);
+            stmt.executeUpdate(updateTarget);
+
+            System.out.println("Successfully verified content columns.");
 
         } catch (Exception e) {
             e.printStackTrace();

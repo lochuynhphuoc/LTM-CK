@@ -22,10 +22,8 @@ public class WorkerThread extends Thread {
                 // Update status to PROCESSING
                 taskDAO.updateTaskStatus(task.getId(), "PROCESSING", 0);
 
-                // Perform Plagiarism Check (Similarity between two URLs)
-                // task.getUrl() is Source URL
-                // task.getKeyword() is Target URL (repurposed field)
-                int similarity = checkPlagiarism(task.getUrl(), task.getKeyword());
+                // Perform plagiarism check using the stored contents
+                int similarity = checkPlagiarism(task.getSourceContent(), task.getTargetContent());
 
                 // Update status to COMPLETED
                 taskDAO.updateTaskStatus(task.getId(), "COMPLETED", similarity);

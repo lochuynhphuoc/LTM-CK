@@ -7,12 +7,12 @@ import java.util.List;
 
 public class TaskDAO {
     public int addTask(Task task) {
-        String sql = "INSERT INTO tasks (user_id, url, keyword, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks (user_id, source_content, target_content, status) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, task.getUserId());
-            stmt.setString(2, task.getUrl());
-            stmt.setString(3, task.getKeyword());
+            stmt.setString(2, task.getSourceContent());
+            stmt.setString(3, task.getTargetContent());
             stmt.setString(4, "PENDING");
             stmt.executeUpdate();
             
@@ -37,8 +37,8 @@ public class TaskDAO {
                 tasks.add(new Task(
                     rs.getInt("id"),
                     rs.getInt("user_id"),
-                    rs.getString("url"),
-                    rs.getString("keyword"),
+                    rs.getString("source_content"),
+                    rs.getString("target_content"),
                     rs.getString("status"),
                     rs.getInt("result"),
                     rs.getTimestamp("created_at")

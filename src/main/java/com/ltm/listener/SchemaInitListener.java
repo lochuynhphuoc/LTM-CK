@@ -16,23 +16,21 @@ public class SchemaInitListener implements ServletContextListener {
         try (Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement()) {
 
-            // Update 'keyword' column to LONGTEXT to support large file content
-            // Using try-catch for each statement to avoid stopping if column already
-            // exists/modified (though ALTER usually works fine)
+            // Ensure LONGTEXT columns exist for plagiarism payloads
             try {
-                String sql1 = "ALTER TABLE tasks MODIFY COLUMN keyword LONGTEXT";
+                String sql1 = "ALTER TABLE tasks MODIFY COLUMN source_content LONGTEXT";
                 stmt.executeUpdate(sql1);
-                System.out.println("SchemaInitListener: Successfully updated 'keyword' column to LONGTEXT.");
+                System.out.println("SchemaInitListener: source_content column verified.");
             } catch (Exception e) {
-                System.out.println("SchemaInitListener: Warning updating 'keyword' column: " + e.getMessage());
+                System.out.println("SchemaInitListener: Warning updating source_content: " + e.getMessage());
             }
 
             try {
-                String sql2 = "ALTER TABLE tasks MODIFY COLUMN url LONGTEXT";
+                String sql2 = "ALTER TABLE tasks MODIFY COLUMN target_content LONGTEXT";
                 stmt.executeUpdate(sql2);
-                System.out.println("SchemaInitListener: Successfully updated 'url' column to LONGTEXT.");
+                System.out.println("SchemaInitListener: target_content column verified.");
             } catch (Exception e) {
-                System.out.println("SchemaInitListener: Warning updating 'url' column: " + e.getMessage());
+                System.out.println("SchemaInitListener: Warning updating target_content: " + e.getMessage());
             }
 
         } catch (Exception e) {

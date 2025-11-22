@@ -201,22 +201,22 @@
                                             <td>${task.id}</td>
                                             <td>
                                                 <c:out
-                                                    value="${task.url.length() > 20 ? task.url.substring(0, 20) : task.url}" />
+                                                    value="${task.sourceContent.length() > 20 ? task.sourceContent.substring(0, 20) : task.sourceContent}" />
                                                 ...
                                                 <button type="button" class="view-btn"
                                                     onclick="showPreview('Source Content', 'source-content-${task.id}')">View</button>
                                                 <div id="source-content-${task.id}" style="display:none;">
-                                                    <c:out value="${task.url}" />
+                                                    <c:out value="${task.sourceContent}" />
                                                 </div>
                                             </td>
                                             <td>
                                                 <c:out
-                                                    value="${task.keyword.length() > 20 ? task.keyword.substring(0, 20) : task.keyword}" />
+                                                    value="${task.targetContent.length() > 20 ? task.targetContent.substring(0, 20) : task.targetContent}" />
                                                 ...
                                                 <button type="button" class="view-btn"
                                                     onclick="showPreview('Target Content', 'target-content-${task.id}')">View</button>
                                                 <div id="target-content-${task.id}" style="display:none;">
-                                                    <c:out value="${task.keyword}" />
+                                                    <c:out value="${task.targetContent}" />
                                                 </div>
                                             </td>
                                             <td>

@@ -61,3 +61,4 @@ UDP không có khái niệm kết thúc phiên nên cả hai chương trình ch�
 - Các demo giúp sinh viên thấy rõ khác biệt giữa socket hướng luồng (TCP) và datagram (UDP) trước khi làm việc với task queue/worker trong phần web.
 - Mẫu code sử dụng **try-with-resources**, **multi-threading**, và **buffer** chuẩn, có thể tái sử dụng khi cần tích hợp chức năng mạng thực thụ vào ứng dụng chính.
 - Ports `12345` và `9876` chỉ dùng cho demo cục bộ; khi deploy cần mở firewall tương ứng hoặc đổi port cho phù hợp hạ tầng.
+- Khi chuyển sang module web, hàng đợi nhiệm vụ truyền cho `WorkerThread` các đối tượng `Task` với hai field nội dung là `sourceContent` và `targetContent` tương ứng hai cột `source_content` và `target_content`. Điều này giúp người học liên hệ rõ giữa phần lý thuyết mạng và cơ chế kiểm tra đạo văn.

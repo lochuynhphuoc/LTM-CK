@@ -9,15 +9,14 @@
 
             <body>
                 <h2>Database Schema Update</h2>
-                <% try (Connection conn=DatabaseConnection.getConnection(); Statement stmt=conn.createStatement()) { //
-                    Alter 'keyword' column to TEXT to hold file content String
-                    sql1="ALTER TABLE tasks MODIFY COLUMN keyword LONGTEXT" ; stmt.executeUpdate(sql1); out.println("<p
-                    style='color:green'>Successfully updated 'keyword' column to LONGTEXT.</p>");
+                <% try (Connection conn=DatabaseConnection.getConnection(); Statement stmt=conn.createStatement()) {
+                    String sql1="ALTER TABLE tasks MODIFY COLUMN source_content LONGTEXT";
+                    stmt.executeUpdate(sql1);
+                    out.println("<p style='color:green'>source_content column confirmed as LONGTEXT.</p>");
 
-                    // Alter 'url' column to TEXT to hold file content (just in case)
-                    String sql2 = "ALTER TABLE tasks MODIFY COLUMN url LONGTEXT";
+                    String sql2="ALTER TABLE tasks MODIFY COLUMN target_content LONGTEXT";
                     stmt.executeUpdate(sql2);
-                    out.println("<p style='color:green'>Successfully updated 'url' column to LONGTEXT.</p>");
+                    out.println("<p style='color:green'>target_content column confirmed as LONGTEXT.</p>");
 
                     } catch (Exception e) {
                     out.println("<p style='color:red'>Error: " + e.getMessage() + "</p>");
