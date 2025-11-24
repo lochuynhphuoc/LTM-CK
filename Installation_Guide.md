@@ -15,8 +15,8 @@
 ## 2. Chuẩn bị mã nguồn
 
 ```bash
-git clone <repo-link>
-cd danhgiacuoiky
+git clone https://github.com/lochuynhphuoc/LTM-CK.git
+cd LTM-CK
 mvn clean package
 ```
 
@@ -25,6 +25,7 @@ Lệnh trên tạo file `target/final-project.war`. Nếu build lỗi, kiểm tr
 ## 3. Cấu hình cơ sở dữ liệu
 
 1. Khởi tạo schema:
+
    ```sql
    SOURCE database.sql;
    ```
