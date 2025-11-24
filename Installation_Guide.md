@@ -1,6 +1,6 @@
 # Hướng dẫn Cài đặt & Vận hành - Đồ án LTM
 
-Ứng dụng hiện tại là **Plagiarism Checker** xây dựng bằng JSP/Servlet, MySQL và nền tảng TCP/UDP demo thuần Java. Giao diện chính sau khi đăng nhập:
+Ứng dụng hiện tại là **Plagiarism Checker** xây dựng bằng JSP/Servlet và MySQL. Giao diện chính sau khi đăng nhập:
 
 ![Dashboard UI](image/Installation_Guide/1763827372898.png)
 
@@ -62,22 +62,11 @@ Lệnh trên tạo file `target/final-project.war`. Nếu build lỗi, kiểm tr
 - **View**: `login.jsp`, `register.jsp`, `dashboard.jsp`, `db_update.jsp`.
 - **Background services**: `WorkerThread` + `TaskQueue` xử lý nặng, `SchemaInitListener` đảm bảo DB tương thích.
 
-## 7. Demo TCP/UDP song song
-
-Các demo mạng được build cùng project và có thể chạy bằng `java -cp target/classes` sau khi `mvn package`:
-
-| Thành phần | Lệnh chạy (ví dụ)              | Ghi chú                                                                       |
-| ------------ | ---------------------------------- | ------------------------------------------------------------------------------ |
-| TCP Server   | `java com.ltm.tcp.TcpEchoServer` | Lắng nghe port `12345`, mỗi client chạy ở một `ClientHandler` riêng. |
-| TCP Client   | `java com.ltm.tcp.TcpEchoClient` | Kết nối `localhost:12345`, gõ `bye` để thoát.                        |
-| UDP Server   | `java com.ltm.udp.UdpEchoServer` | Lắng nghe port `9876`, phản hồi “Echo: …”.                             |
-| UDP Client   | `java com.ltm.udp.UdpEchoClient` | Gửi datagram tới `localhost:9876`, kết thúc bằng `bye`.               |
-
-## 8. Xử lý sự cố thường gặp
+## 7. Xử lý sự cố thường gặp
 
 - **Không upload được file lớn**: tăng `maxPostSize` của Tomcat Connector và chỉnh `@MultipartConfig(maxFileSize = …)` nếu cần.
 - **Lỗi `Communications link failure`**: kiểm tra MySQL chạy trên port 3306 và cấu hình `allowPublicKeyRetrieval=true` như trong `DatabaseConnection`.
 - **POI báo thiếu memory**: với file `.docx` lớn, cấp thêm RAM cho JVM (`set "JAVA_OPTS=-Xms512m -Xmx1024m"`).
 - **Worker không chạy**: chắc chắn `AppContextListener` đã được Tomcat load (web.xml hoặc annotation). Kiểm tra log `Worker Thread started...`.
 
-Sau khi hoàn tất các bước trên, hệ thống sẵn sàng để kiểm tra đạo văn và chạy song song các ví dụ TCP/UDP phục vụ môn LTM.
+Sau khi hoàn tất các bước trên, hệ thống sẵn sàng để kiểm tra đạo văn phục vụ môn LTM.
