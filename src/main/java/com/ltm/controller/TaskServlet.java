@@ -37,7 +37,7 @@ public class TaskServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8"); // Support Vietnamese
+        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("login.jsp");
@@ -45,34 +45,81 @@ public class TaskServlet extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
-
-        // Handle File Uploads
         Part sourcePart = request.getPart("sourceFile");
-        Part targetPart = request.getPart("targetFile");
+        String topic = request.getParameter("topic");
 
-        System.out.println("Received upload request.");
+        if (sourcePart != null && topic != null) {
+            String sourceContent = extractContent(sourcePart);
 
-        String sourceContent = extractContent(sourcePart);
-        String targetContent = extractContent(targetPart);
+            // Find the best match in the corpus
+            String corpusPath = getServletContext().getRealPath("/WEB-INF/corpus/" + topic);
+            java.io.File corpusDir = new java.io.File(corpusPath);
+            String bestMatchContent = "No matching content found in corpus.";
+            double maxSimilarity = 0.0;
+            String bestMatchFilename = "";
 
-        System.out.println("Source content length: " + sourceContent.length());
-        System.out.println("Target content length: " + targetContent.length());
+            if (corpusDir.exists() && corpusDir.isDirectory()) {
+                java.io.File[] files = corpusDir.listFiles();
+                if (files != null) {
+                    for (java.io.File file : files) {
+                        if (file.isFile()) {
+                            try {
+                                String fileContent = new String(java.nio.file.Files.readAllBytes(file.toPath()),
+                                        java.nio.charset.StandardCharsets.UTF_8);
 
-        Task task = new Task();
-        task.setUserId(user.getId());
-        task.setSourceContent(sourceContent); // store original text
-        task.setTargetContent(targetContent); // store suspected text
+                                // Simple Jaccard similarity for initial check
+                                java.util.Set<String> sourceWords = new java.util.HashSet<>(
+                                        java.util.Arrays.asList(sourceContent.toLowerCase().split("\\s+")));
+                                java.util.Set<String> targetWords = new java.util.HashSet<>(
+                                        java.util.Arrays.asList(fileContent.toLowerCase().split("\\s+")));
+                                java.util.Set<String> intersection = new java.util.HashSet<>(sourceWords);
+                                intersection.retainAll(targetWords);
 
-        int taskId = taskDAO.addTask(task);
-        System.out.println("Task added to DB with ID: " + taskId);
+                                double union = sourceWords.size() + targetWords.size() - intersection.size();
+                                double similarity = (union == 0) ? 0 : (double) intersection.size() / union;
 
-        if (taskId != -1) {
-            task.setId(taskId);
-            // Add to Background Queue
-            TaskQueue.getInstance().addTask(task);
-            System.out.println("Task added to Queue.");
-        } else {
-            System.out.println("Failed to add task to DB.");
+                                if (similarity > maxSimilarity) {
+                                    maxSimilarity = similarity;
+                                    bestMatchContent = fileContent;
+                                    bestMatchFilename = file.getName();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!bestMatchFilename.isEmpty()) {
+                bestMatchContent = "Matched with: " + bestMatchFilename + "\n\n" + bestMatchContent;
+            } else if (maxSimilarity == 0.0 && corpusDir.exists() && corpusDir.listFiles() != null
+                    && corpusDir.listFiles().length > 0) {
+                // Fallback: if no similarity found (e.g. empty files), just pick the first one
+                // to avoid empty target
+                try {
+                    java.io.File firstFile = corpusDir.listFiles()[0];
+                    bestMatchContent = "Matched with: " + firstFile.getName() + " (Fallback)\n\n"
+                            + new String(java.nio.file.Files.readAllBytes(firstFile.toPath()),
+                                    java.nio.charset.StandardCharsets.UTF_8);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Task task = new Task();
+            task.setUserId(user.getId());
+            task.setSourceContent(sourceContent);
+            task.setTargetContent(bestMatchContent);
+            task.setStatus("PENDING");
+            task.setResult(0);
+            task.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+
+            int taskId = taskDAO.addTask(task);
+            if (taskId != -1) {
+                task.setId(taskId);
+                TaskQueue.getInstance().addTask(task);
+            }
         }
 
         response.sendRedirect("dashboard");

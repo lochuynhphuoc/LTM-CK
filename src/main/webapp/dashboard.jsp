@@ -43,7 +43,8 @@
                     flex: 2;
                 }
 
-                input {
+                input,
+                select {
                     width: 100%;
                     padding: 10px;
                     margin: 10px 0;
@@ -167,14 +168,18 @@
             <div class="content">
                 <div class="form-card">
                     <h3>Plagiarism Checker</h3>
-                    <p>Upload two files to check their content similarity.</p>
+                    <p>Upload a file and select a topic to check for plagiarism.</p>
                     <p><i>Supported formats: .txt, .docx (Others will be read as raw text)</i></p>
                     <form action="dashboard" method="post" enctype="multipart/form-data">
                         <label>Source File (File gốc):</label>
                         <input type="file" name="sourceFile" required accept=".txt,.doc,.docx,.pdf">
 
-                        <label>Target File (File cần kiểm tra):</label>
-                        <input type="file" name="targetFile" required accept=".txt,.doc,.docx,.pdf">
+                        <label>Topic (Chủ đề):</label>
+                        <select name="topic" required>
+                            <option value="technology">Technology</option>
+                            <option value="science">Science</option>
+                            <option value="history">History</option>
+                        </select>
 
                         <button type="submit">Check Similarity</button>
                     </form>
