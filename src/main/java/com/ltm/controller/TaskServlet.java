@@ -26,7 +26,13 @@ public class TaskServlet extends HttpServlet {
         User user = (User) session.getAttribute("user");
         List<Task> tasks = taskDAO.getTasksByUserId(user.getId());
         request.setAttribute("tasks", tasks);
-        request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+
+        String mode = request.getParameter("mode");
+        if ("partial".equals(mode)) {
+            request.getRequestDispatcher("taskList.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+        }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
