@@ -7,13 +7,16 @@ import java.util.List;
 
 public class TaskDAO {
     public int addTask(Task task) {
-        String sql = "INSERT INTO tasks (user_id, source_content, target_content, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks (user_id, topic, source_content, target_content, comparison_details, status) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, task.getUserId());
-            stmt.setString(2, task.getSourceContent());
-            stmt.setString(3, task.getTargetContent());
-            stmt.setString(4, "PENDING");
+            stmt.setString(2, task.getTopic());
+            stmt.setString(3, task.getSourceContent());
+            stmt.setString(4, task.getTargetContent());
+            stmt.setString(5, task.getComparisonDetails());
+            stmt.setString(6, "PENDING");
             stmt.executeUpdate();
             
             ResultSet rs = stmt.getGeneratedKeys();
@@ -37,8 +40,10 @@ public class TaskDAO {
                 tasks.add(new Task(
                     rs.getInt("id"),
                     rs.getInt("user_id"),
+                    rs.getString("topic"),
                     rs.getString("source_content"),
                     rs.getString("target_content"),
+                    rs.getString("comparison_details"),
                     rs.getString("status"),
                     rs.getInt("result"),
                     rs.getTimestamp("created_at")
@@ -57,6 +62,22 @@ public class TaskDAO {
             stmt.setString(1, status);
             stmt.setInt(2, result);
             stmt.setInt(3, taskId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateTaskResult(int taskId, String status, int result,
+                                 String targetContent, String comparisonDetails) {
+        String sql = "UPDATE tasks SET status = ?, result = ?, target_content = ?, comparison_details = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, result);
+            stmt.setString(3, targetContent);
+            stmt.setString(4, comparisonDetails);
+            stmt.setInt(5, taskId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

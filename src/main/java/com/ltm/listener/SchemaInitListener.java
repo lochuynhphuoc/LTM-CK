@@ -16,6 +16,14 @@ public class SchemaInitListener implements ServletContextListener {
         try (Connection conn = DatabaseConnection.getConnection();
                 Statement stmt = conn.createStatement()) {
 
+            try {
+                String addTopic = "ALTER TABLE tasks ADD COLUMN topic VARCHAR(100) AFTER user_id";
+                stmt.executeUpdate(addTopic);
+                System.out.println("SchemaInitListener: topic column added.");
+            } catch (Exception e) {
+                System.out.println("SchemaInitListener: topic column check: " + e.getMessage());
+            }
+
             // Ensure LONGTEXT columns exist for plagiarism payloads
             try {
                 String sql1 = "ALTER TABLE tasks MODIFY COLUMN source_content LONGTEXT";
@@ -31,6 +39,14 @@ public class SchemaInitListener implements ServletContextListener {
                 System.out.println("SchemaInitListener: target_content column verified.");
             } catch (Exception e) {
                 System.out.println("SchemaInitListener: Warning updating target_content: " + e.getMessage());
+            }
+
+            try {
+                String addComparison = "ALTER TABLE tasks ADD COLUMN comparison_details LONGTEXT";
+                stmt.executeUpdate(addComparison);
+                System.out.println("SchemaInitListener: comparison_details column added.");
+            } catch (Exception e) {
+                System.out.println("SchemaInitListener: comparison_details column check: " + e.getMessage());
             }
 
         } catch (Exception e) {

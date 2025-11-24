@@ -21,6 +21,21 @@
             </div>
         </td>
         <td>
+            <c:choose>
+                <c:when test="${not empty task.comparisonDetails}">
+                    <c:set var="comparisonSnippet" value="${task.comparisonDetails.length() > 20 ? task.comparisonDetails.substring(0, 20) : task.comparisonDetails}" />
+                    <c:out value="${comparisonSnippet}" /> ...
+                    <button type="button" class="view-btn" onclick="showPreview('Comparison Details', 'comparison-details-${task.id}')">View</button>
+                    <div id="comparison-details-${task.id}" style="display:none;">
+                        <c:out value="${task.comparisonDetails}" />
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <span>Pending...</span>
+                </c:otherwise>
+            </c:choose>
+        </td>
+        <td>
             <c:set var="statusClass" value="status-${task.status.toLowerCase()}" />
             <span class="${statusClass}">${task.status}</span>
         </td>

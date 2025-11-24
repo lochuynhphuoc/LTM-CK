@@ -11,7 +11,7 @@ public class AppContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        workerThread = new WorkerThread();
+        workerThread = new WorkerThread(sce.getServletContext());
         workerThread.start();
     }
 

@@ -51,66 +51,12 @@ public class TaskServlet extends HttpServlet {
         if (sourcePart != null && topic != null) {
             String sourceContent = extractContent(sourcePart);
 
-            // Find the best match in the corpus
-            String corpusPath = getServletContext().getRealPath("/WEB-INF/corpus/" + topic);
-            java.io.File corpusDir = new java.io.File(corpusPath);
-            String bestMatchContent = "No matching content found in corpus.";
-            double maxSimilarity = 0.0;
-            String bestMatchFilename = "";
-
-            if (corpusDir.exists() && corpusDir.isDirectory()) {
-                java.io.File[] files = corpusDir.listFiles();
-                if (files != null) {
-                    for (java.io.File file : files) {
-                        if (file.isFile()) {
-                            try {
-                                String fileContent = new String(java.nio.file.Files.readAllBytes(file.toPath()),
-                                        java.nio.charset.StandardCharsets.UTF_8);
-
-                                // Simple Jaccard similarity for initial check
-                                java.util.Set<String> sourceWords = new java.util.HashSet<>(
-                                        java.util.Arrays.asList(sourceContent.toLowerCase().split("\\s+")));
-                                java.util.Set<String> targetWords = new java.util.HashSet<>(
-                                        java.util.Arrays.asList(fileContent.toLowerCase().split("\\s+")));
-                                java.util.Set<String> intersection = new java.util.HashSet<>(sourceWords);
-                                intersection.retainAll(targetWords);
-
-                                double union = sourceWords.size() + targetWords.size() - intersection.size();
-                                double similarity = (union == 0) ? 0 : (double) intersection.size() / union;
-
-                                if (similarity > maxSimilarity) {
-                                    maxSimilarity = similarity;
-                                    bestMatchContent = fileContent;
-                                    bestMatchFilename = file.getName();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!bestMatchFilename.isEmpty()) {
-                bestMatchContent = "Matched with: " + bestMatchFilename + "\n\n" + bestMatchContent;
-            } else if (maxSimilarity == 0.0 && corpusDir.exists() && corpusDir.listFiles() != null
-                    && corpusDir.listFiles().length > 0) {
-                // Fallback: if no similarity found (e.g. empty files), just pick the first one
-                // to avoid empty target
-                try {
-                    java.io.File firstFile = corpusDir.listFiles()[0];
-                    bestMatchContent = "Matched with: " + firstFile.getName() + " (Fallback)\n\n"
-                            + new String(java.nio.file.Files.readAllBytes(firstFile.toPath()),
-                                    java.nio.charset.StandardCharsets.UTF_8);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
             Task task = new Task();
             task.setUserId(user.getId());
+            task.setTopic(topic);
             task.setSourceContent(sourceContent);
-            task.setTargetContent(bestMatchContent);
+            task.setTargetContent("Processing corpus comparisons...");
+            task.setComparisonDetails("Waiting for comparison results...");
             task.setStatus("PENDING");
             task.setResult(0);
             task.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));

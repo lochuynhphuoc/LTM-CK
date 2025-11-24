@@ -197,6 +197,7 @@
                                 <th>ID</th>
                                 <th>Source Content</th>
                                 <th>Target Content</th>
+                                <th>Comparison Details</th>
                                 <th>Status</th>
                                 <th>Similarity (%)</th>
                                 <th>Time</th>

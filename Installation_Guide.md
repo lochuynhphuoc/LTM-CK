@@ -29,9 +29,9 @@ Lệnh trên tạo file `target/final-project.war`. Nếu build lỗi, kiểm tr
    SOURCE database.sql;
    ```
 
-   Script tạo DB `ltm_final_project`, bảng `users`, `tasks` và user admin mặc định (`admin/123456`).
-2. Cập nhật thông tin kết nối tại `src/main/java/com/ltm/dao/DatabaseConnection.java` cho phù hợp server thật (`URL`, `USER `, `PASSWORD`).
-3. Khi ứng dụng khởi động, `SchemaInitListener` sẽ tự động đảm bảo hai cột `source_content` và `target_content` có kiểu `LONGTEXT` để chứa file lớn. Đảm bảo account MySQL được cấp quyền `ALTER`.
+   Script tạo DB `ltm_final_project`, bảng `users`, `tasks`, đồng thời sinh user MySQL chuyên dụng (`ltm_app_user/ChangeMe123!`). **Hãy chỉnh lại username/password trong file SQL trước khi chạy** nếu môi trường của bạn yêu cầu thông tin khác.
+2. Cập nhật thông tin kết nối tại `src/main/java/com/ltm/dao/DatabaseConnection.java` (hoặc thông qua biến môi trường/java opts) để trùng với credential bạn đã đặt trong bước trên. Nếu quên chỉnh, ứng dụng sẽ báo lỗi không đăng nhập được MySQL.
+3. Khi ứng dụng khởi động, `SchemaInitListener` sẽ tự động đảm bảo các cột `source_content`, `target_content` và `comparison_details` có kiểu `LONGTEXT` để chứa nội dung lớn. Đảm bảo account MySQL được cấp quyền `ALTER`.
 
 ## 4. Deploy lên Tomcat
 
@@ -48,6 +48,7 @@ Lệnh trên tạo file `target/final-project.war`. Nếu build lỗi, kiểm tr
    - Từ `dashboard.jsp`, upload **2 file** (hỗ trợ `.txt`, `.doc`, `.docx`, `.pdf`).
    - `TaskServlet` (được đánh dấu `@MultipartConfig`) đọc nội dung file. Với `.docx`, ứng dụng sử dụng **Apache POI** (`poi-ooxml`) để trích văn bản, các định dạng còn lại đọc dưới dạng UTF-8 text.
    - Nội dung được lưu trực tiếp vào hai thuộc tính `sourceContent` và `targetContent` của entity `Task`, ánh xạ lần lượt tới các cột `source_content` và `target_content` trong bảng `tasks`.
+   - File nguồn và chủ đề được enqueue; worker sẽ tự động so sánh với **toàn bộ tập tin trong corpus theo chủ đề** và tạo danh sách phần trăm tương đồng cho từng file.
 3. **Hàng đợi & xử lý nền**
    - `TaskQueue` lưu task mới, `AppContextListener` khởi động `WorkerThread` ngay khi webapp lên.
    - `WorkerThread` cập nhật trạng thái `PENDING → PROCESSING → COMPLETED/FAILED` và tính phần trăm giống nhau bằng **Jaccard similarity** trên tập từ khóa.
